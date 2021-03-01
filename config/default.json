@@ -1,3 +1,4 @@
 {
-    "mongoUri": "mongodb://127.0.0.1:27017/local"
+    "mongoUri": "mongodb://127.0.0.1:27017/local",
+    "sessionKey": "nvkLCHJwzfg117le"
 }
