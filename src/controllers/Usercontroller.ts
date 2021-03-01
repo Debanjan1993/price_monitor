@@ -52,6 +52,36 @@ class UserController {
 
     }
 
+    verifyUser = async (req: Request, res: Response) => {
+        const { username, password } = req.body;
+        if (!username) {
+            return res.status(400).json('Please enter the username');
+        }
+        if (!password) {
+            return res.status(400).json('Please enter the password');
+        }
+
+        const user = await this.userRepository.getUserByEmail(username);
+
+        if (!user) {
+            return res.status(400).json('No user exists with the entered email please sign up now');
+        }
+
+        const dbPassword = user.password;
+
+        const isMatched = await this.crypt.comparePassword(password, dbPassword);
+
+        if (!isMatched) {
+            return res.status(401).json('The password entered is not correct');
+        }
+
+        req.session.email = username
+        return res.status(200).json('Signed In');
+
+    }
+
+
+
 }
 
 export default UserController;
