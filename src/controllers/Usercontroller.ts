@@ -4,6 +4,7 @@ import { injectable } from 'inversify';
 import { Request, Response } from 'express';
 import Crypt from '../crypto/crypt';
 import { IUser } from '../types/SchemaTypes';
+import moment from 'moment';
 
 @injectable()
 class UserController {
@@ -42,11 +43,15 @@ class UserController {
 
         const hashedPassword = await this.crypt.createCrypt(password);
 
-        Object.assign(req.body, {
-            password: hashedPassword
-        })
+        const dbObj: Partial<IUser> = {
+            username: personName,
+            email: email,
+            password: hashedPassword,
+            dateOfJoining: moment().unix(),
+            isPaidUser : false
+        }
 
-        await this.userRepository.saveUserToDB(req.body);
+        await this.userRepository.saveUserToDB(dbObj as IUser);
 
         res.status(201).json('User Successfully Created');
 
