@@ -18,7 +18,7 @@ class Routes {
         this.router.get('/login', (req: Request, res: Response) => {
             res.sendFile(path.join(__dirname, '../../public/login.html'));
         })
-        
+
         this.router.get('/signUp', (req: Request, res: Response) => {
             res.sendFile(path.join(__dirname, '../../public/register.html'));
         })
@@ -27,13 +27,17 @@ class Routes {
             res.sendFile(path.join(__dirname, '../../public/dashboard.html'));
         })
 
-        this.router.get('/test', (req: Request, res: Response) => {
-            res.status(200).json('Test Successsful');
-        });
+        this.router.post('/api/login', async (req: Request, res: Response) => {
+            await this.userController.verifyUser(req, res);
+        })
 
         this.router.post('/api/signup', async (req: Request, res: Response) => {
             await this.userController.addUser(req, res);
         })
+
+        this.router.get('/test', (req: Request, res: Response) => {
+            res.status(200).json('Test Successsful');
+        });
 
         app.use('/', this.router);
 

@@ -6,10 +6,50 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
 </head>
 
 <body>
-    <h1>Sign Up</h1>
+    <div id="app">
+        <h1>SIGN UP</h1>
+        <input type="text" placeholder="Enter name" v-model="personName">
+        <input type="text" placeholder="Enter email" v-model="email">
+        <input type="password" placeholder="Enter password" v-model="password">
+        <input type="password" placeholder="Confirm password" v-model="password2">
+        <button v-on:click="signUp()">SIGN UP</button>
+    </div>
 </body>
+
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            personName: '',
+            email: '',
+            password: '',
+            password2: ''
+        },
+        methods: {
+            signUp() {
+                const obj = {
+                    personName: this.personName,
+                    email: this.email,
+                    password: this.password,
+                    password2: this.password2
+                }
+                console.log(obj);
+                fetch('http://localhost:4000/api/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(obj)
+                })
+            }
+        }
+    })
+</script>
 
 </html>

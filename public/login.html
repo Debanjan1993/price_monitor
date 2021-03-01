@@ -6,10 +6,43 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
 </head>
 
 <body>
-    <h1>Login</h1>
+    <div id="app">
+        <h1>LOGIN</h1>
+        <input type="text" placeholder="Enter username" v-model="username">
+        <input type="password" placeholder="Enter password" v-model="password">
+        <button v-on:click="login()">LOGIN</button>
+    </div>
 </body>
+
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            username: '',
+            password: ''
+        },
+        methods: {
+            login() {
+                const obj = {
+                    username: this.username,
+                    password: this.password
+                }
+                fetch('http://localhost:4000/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(obj)
+                })
+            }
+        }
+    })
+</script>
 
 </html>
