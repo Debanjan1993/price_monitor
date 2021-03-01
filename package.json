@@ -1,0 +1,28 @@
+{
+    "name": "price_monitor",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/app.ts\""
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcrypt": "^5.0.1",
+        "body-parser": "^1.19.0",
+        "config": "^3.3.4",
+        "express": "^4.17.1",
+        "inversify": "^5.0.5",
+        "mongoose": "^5.11.18",
+        "reflect-metadata": "^0.1.13"
+    },
+    "devDependencies": {
+        "@types/bcrypt": "^3.0.0",
+        "@types/config": "0.0.38",
+        "@types/express": "^4.17.11",
+        "nodemon": "^2.0.7",
+        "ts-node": "^9.1.1",
+        "typescript": "^4.2.2"
+    }
+}
