@@ -39,6 +39,12 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(obj)
+                }).then(res => {
+                    if (res.status === 200) {
+                        window.location.href = "/dashboard"
+                    } else {
+                        res.json().then(data => alert(data));
+                    }
                 })
             }
         }

@@ -3,14 +3,17 @@ import { injectable } from 'inversify';
 import UserController from '../controllers/Usercontroller';
 import DIContainer from '../ioc/DIContainer';
 import path from 'path';
+import Middleware from './middleware';
 
 @injectable()
 class Routes {
     router: Router
     userController: UserController
+    middleware: Middleware
     constructor() {
         this.router = DIContainer.container.get(Router);
         this.userController = DIContainer.container.get(UserController);
+        this.middleware = DIContainer.container.get(Middleware);
     }
 
     init = (app: Application) => {
@@ -23,7 +26,7 @@ class Routes {
             res.sendFile(path.join(__dirname, '../../public/register.html'));
         })
 
-        this.router.get('/dashboard', (req: Request, res: Response) => {
+        this.router.get('/dashboard', this.middleware.verifySession, (req: Request, res: Response) => {
             res.sendFile(path.join(__dirname, '../../public/dashboard.html'));
         })
 
@@ -33,6 +36,10 @@ class Routes {
 
         this.router.post('/api/signup', async (req: Request, res: Response) => {
             await this.userController.addUser(req, res);
+        })
+
+        this.router.post('/api/logout', async (req: Request, res: Response) => {
+            await this.userController.logout(req, res);
         })
 
         this.router.get('/test', (req: Request, res: Response) => {

@@ -85,6 +85,16 @@ class UserController {
 
     }
 
+    logout = async(req:Request,res:Response) => {
+        req.session.destroy(err => {
+            if(err) {
+                return res.status(500).json('Internal server Error');
+            }else{
+                return res.redirect('/login');
+            }
+        })
+    }
+
 
 
 }
