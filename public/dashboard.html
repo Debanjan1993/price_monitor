@@ -13,6 +13,7 @@
 <body>
     <div id="app">
         <h1>Dashboard</h1>
+        <input type="text" v-model="link"><button v-on:click="addlink()">ADD LINK</button>
         <button v-on:click="logout()">LOGOUT</button>
     </div>
 </body>
@@ -20,10 +21,11 @@
 <script>
     const app = new Vue({
         el: '#app',
-        data: {},
+        data: {
+            link: ''
+        },
         methods: {
             logout() {
-                console.log('logout')
                 fetch('http://localhost:4000/api/logout', {
                     method: 'POST',
                     headers: {
@@ -33,6 +35,26 @@
                 }).then(res => {
                     if (res.redirected) {
                         window.location.href = res.url;
+                    }
+                })
+            },
+            addlink() {
+                const obj = {
+                    url: this.link
+                }
+                fetch('http://localhost:4000/addLink', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(obj)
+                }).then(res => {
+                    if (res.status === 201) {
+                        alert('Link Added');
+                        this.link = ''
+                    } else {
+                        res.json().then(data => alert(data));
                     }
                 })
             }
