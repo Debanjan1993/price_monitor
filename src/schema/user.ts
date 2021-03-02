@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { IUser } from '../types/SchemaTypes';
 
 const UserSchema = new mongoose.Schema({
@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
     password: { type: String, required: true },
     dateOfJoining: { type: Number, required: true },
     isPaidUser: { type: Boolean, required: true },
+    links: [{ type: Schema.Types.ObjectId, ref: 'Links' }]
 })
 
 const User = mongoose.model<IUser>('User', UserSchema);

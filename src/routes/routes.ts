@@ -4,16 +4,19 @@ import UserController from '../controllers/Usercontroller';
 import DIContainer from '../ioc/DIContainer';
 import path from 'path';
 import Middleware from './middleware';
+import LinkController from '../controllers/LinkController';
 
 @injectable()
 class Routes {
     router: Router
     userController: UserController
     middleware: Middleware
+    linkController: LinkController
     constructor() {
         this.router = DIContainer.container.get(Router);
         this.userController = DIContainer.container.get(UserController);
         this.middleware = DIContainer.container.get(Middleware);
+        this.linkController = DIContainer.container.get(LinkController);
     }
 
     init = (app: Application) => {
@@ -40,6 +43,10 @@ class Routes {
 
         this.router.post('/api/logout', async (req: Request, res: Response) => {
             await this.userController.logout(req, res);
+        })
+
+        this.router.post('/addLink', async (req: Request, res: Response) => {
+            await this.linkController.createLink(req, res);
         })
 
         this.router.get('/test', (req: Request, res: Response) => {
