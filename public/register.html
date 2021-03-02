@@ -31,6 +31,7 @@
             password2: ''
         },
         methods: {
+
             signUp() {
                 const obj = {
                     personName: this.personName,
@@ -46,8 +47,17 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(obj)
+                }).then(res => {
+                    if (res.status === 201) {
+                        window.location.href = '/login'
+                    } else {
+                        res.json().then(data => alert(data));
+                    }
                 })
             }
+
+
+
         }
     })
 </script>

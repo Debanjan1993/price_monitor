@@ -5,11 +5,39 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
     <title>Dashboard</title>
 </head>
 
 <body>
-    <h1>Dashboard</h1>
+    <div id="app">
+        <h1>Dashboard</h1>
+        <button v-on:click="logout()">LOGOUT</button>
+    </div>
 </body>
+
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {},
+        methods: {
+            logout() {
+                console.log('logout')
+                fetch('http://localhost:4000/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => {
+                    if (res.redirected) {
+                        window.location.href = res.url;
+                    }
+                })
+            }
+        }
+    })
+</script>
 
 </html>

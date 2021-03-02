@@ -3,6 +3,7 @@ import { Container } from 'inversify';
 import UserController from '../controllers/Usercontroller';
 import Crypt from '../crypto/crypt';
 import UserRepository from '../repository/UserRepository';
+import Middleware from '../routes/middleware';
 import Routes from '../routes/routes';
 
 class DIContainer {
@@ -30,6 +31,7 @@ class DIContainer {
             container.bind<UserRepository>(UserRepository).toSelf();
             container.bind<Crypt>(Crypt).toSelf();
             container.bind<UserController>(UserController).toSelf();
+            container.bind<Middleware>(Middleware).toSelf();
 
             const router = Router();
             container.bind<Router>(Router).toConstantValue(router);

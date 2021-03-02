@@ -7,6 +7,7 @@ import connectToDB from './connecToDB';
 import session from 'express-session';
 import config from 'config';
 import path from 'path';
+import MongoStore from 'connect-mongo';
 
 (async function () {
 
@@ -18,13 +19,17 @@ import path from 'path';
 
     await connectToDB();
 
+    const sessionStore: MongoStore = MongoStore.create({
+        mongoUrl: config.get<string>("mongoUri"),
+        collectionName: 'sessions'
+    })
+
     app.use(session({
+        store: sessionStore,
         secret: config.get<string>("sessionKey"),
         resave: false,
         saveUninitialized: false
     }))
-
-    // console.log(path.join(__dirname, '../public'));
 
     await DIContainer.instance.init();
 
