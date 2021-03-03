@@ -1,0 +1,83 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: #34495e;
+}
+
+#app {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 80px 80px;
+    background: #191919;
+}
+
+#username {
+    margin: 20px;
+    border: 2px solid #3498db;
+    border-radius: 24px;
+    padding: 14px 10px;
+    width: 200px;
+    text-align: center;
+    transition: ease-in 0.5s;
+}
+
+#password {
+    margin: 20px;
+    border: 2px solid #3498db;
+    padding: 14px 10px;
+    border-radius: 24px;
+    width: 200px;
+    text-align: center;
+    transition: ease-in 0.5s;
+}
+
+#username:hover,
+#password:hover {
+    border-color: #2ecc71;
+}
+
+#button {
+    margin: 0 auto;
+    border: 2px solid #2ecc71;
+    padding: 14px 10px;
+    border-radius: 24px;
+    width: 50px;
+    transition: ease-in 0.5s;
+}
+
+#button:hover {
+    background: #2ecc71;
+}
+
+#header {
+    margin: 20px;
+    padding: 10px;
+    text-align: center;
+    color: #3498db;
+    font-family: "Lucida Handwriting";
+}
+
+input {
+    background: transparent;
+    border: none;
+    text-align: center;
+    color: #fff;
+    outline: none;
+}
+
+input[type="submit"] {
+    color: #fff;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    color: #191919;
+}
+
+h1 {
+    margin: 0;
+    font-weight: 300;
+}
