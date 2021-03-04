@@ -81,3 +81,21 @@ h1 {
     margin: 0;
     font-weight: 300;
 }
+
+#footer {
+    margin-top: 20px;
+    text-align: center;
+    color: #828282;
+    font-size: 14px;
+    font-family: "Lucida Handwriting"
+}
+
+a {
+    text-decoration: none;
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+input#signup {
+    font-size: 10px;
+}
