@@ -19,7 +19,7 @@ class LinkController {
         const { url } = req.body;
 
         if (!url || !validUrl.isUri(url)) {
-            res.status(401).json('Enter valid Url');
+            return res.status(401).json('Enter valid Url');
         }
 
         let dbObj: Partial<ILink> = {
