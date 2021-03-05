@@ -7,14 +7,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+    <link rel="stylesheet" href="./dash.css">
     <title>Dashboard</title>
 </head>
 
 <body>
     <div id="app">
-        <h1>Dashboard</h1>
-        <input type="text" v-model="link"><button v-on:click="addlink()">ADD LINK</button>
-        <button v-on:click="logout()">LOGOUT</button>
+        <div id="sidebar">
+            <div id="header">
+                Price Monitor Pvt Ltd
+            </div>
+            <div id="user">
+                <span id="dot">●</span> Debanjan
+            </div>
+            <div id="account">
+                <input id="inputAccount" type="submit" value="Account" />
+            </div>
+            <div id="logout">
+                <input id="inputLogout" type="submit" v-on:click="logout()" value="Logout" />
+            </div>
+        </div>
+        <div id="main">
+            <h1>Dashboard</h1>
+            <input type="text" v-model="link"><button v-on:click="addlink()">ADD LINK</button>
+            <ul>
+                <li v-for="link in linksObj" :key="link.id">
+                    {{link.url}} {{link.date}}
+                </li>
+            </ul>
+        </div>
+
     </div>
 </body>
 
@@ -22,7 +44,11 @@
     const app = new Vue({
         el: '#app',
         data: {
-            link: ''
+            link: '',
+            linksObj: [{
+                url: '',
+                date: ''
+            }]
         },
         methods: {
             logout() {
@@ -58,6 +84,23 @@
                     }
                 })
             }
+        },
+        mounted() {
+            fetch('http://localhost:4000/api/userDetails', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            }).then(res => {
+                if (res.status !== 200) {
+                    res.json().then(data => alert(data));
+                } else {
+                    res.json().then(data => {
+                        this.linksObj = data.links;
+                    });
+                }
+            })
         }
     })
 </script>

@@ -3,16 +3,19 @@ import DIContainer from '../ioc/DIContainer';
 import { injectable } from 'inversify';
 import { Request, Response } from 'express';
 import Crypt from '../crypto/crypt';
-import { IUser } from '../types/SchemaTypes';
+import { ILink, IUser } from '../types/SchemaTypes';
 import moment from 'moment';
+import LinksRepository from '../repository/LinksRepository';
 
 @injectable()
 class UserController {
     userRepository: UserRepository;
-    crypt: Crypt
+    crypt: Crypt;
+    linksRepository: LinksRepository;
     constructor() {
         this.userRepository = DIContainer.container.get(UserRepository);
         this.crypt = DIContainer.container.get(Crypt);
+        this.linksRepository = DIContainer.container.get(LinksRepository);
     }
 
     addUser = async (req: Request, res: Response) => {
@@ -48,7 +51,7 @@ class UserController {
             email: email,
             password: hashedPassword,
             dateOfJoining: moment().unix(),
-            isPaidUser : false
+            isPaidUser: false
         }
 
         await this.userRepository.saveUserToDB(dbObj as IUser);
@@ -85,17 +88,27 @@ class UserController {
 
     }
 
-    logout = async(req:Request,res:Response) => {
+    logout = async (req: Request, res: Response) => {
         req.session.destroy(err => {
-            if(err) {
+            if (err) {
                 return res.status(500).json('Internal server Error');
-            }else{
+            } else {
                 return res.redirect('/login');
             }
         })
     }
 
-
+    userDetails = async (req: Request, res: Response) => {
+        const email = req.session.email;
+        const user = await this.userRepository.getUserByEmail(email);
+        const linkIds = user.links;
+        const links: ILink[] = await this.linksRepository.getLinksByID(linkIds);
+        const userObj = {
+            user :user,
+            links : links
+        }
+        return res.status(200).json(userObj);
+    }
 
 }
 

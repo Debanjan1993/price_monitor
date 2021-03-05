@@ -45,6 +45,10 @@ class Routes {
             await this.userController.logout(req, res);
         })
 
+        this.router.get('/api/userDetails', this.middleware.verifySession, async (req: Request, res: Response) => {
+            await this.userController.userDetails(req, res);
+        })
+
         this.router.post('/addLink', async (req: Request, res: Response) => {
             await this.linkController.createLink(req, res);
         })
