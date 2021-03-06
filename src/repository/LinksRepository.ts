@@ -22,6 +22,12 @@ class LinksRepository {
         })
     }
 
+    deleteLinkByURL = async (url: string) => {
+        return Link.deleteOne({
+            url: url
+        })
+    }
+
 }
 
 export default LinksRepository;

@@ -7,6 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css">
     <link rel="stylesheet" href="./dash.css">
     <title>Dashboard</title>
 </head>
@@ -28,15 +32,42 @@
             </div>
         </div>
         <div id="main">
-            <h1>Dashboard</h1>
-            <input type="text" v-model="link"><button v-on:click="addlink()">ADD LINK</button>
-            <ul>
-                <li v-for="link in linksObj" :key="link.id">
-                    {{link.url}} {{link.date}}
-                </li>
-            </ul>
-        </div>
+            <div id="main-head">
+                <h1>Dashboard</h1>
+            </div>
+            <div id="main-input">
+                <input id="inputMain" placeholder="Enter the URL" type="text" v-model="link" size="50">
+            </div>
+            <div id="main-price">
+                <input id="inputprice" placeholder="Enter the Price" type="number" v-model="price" size="50">
+            </div>
+            <div id="main-add">
+                <input id="inputSub" type="submit" v-on:click="addlink()" value="ADD LINK" />
+            </div>
+            <div id="table">
+                <table class="table table-bordered table-dark table-head">
+                    <thead class="table-head">
+                        <tr>
+                            <th scope="col">URL</th>
+                            <th scope="col">Created At</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        <tr v-for="link in linksObj" :key="link.id">
+                            <td>{{link.url}}</td>
+                            <td>{{link.date}}</td>
+                            <td>{{link.price}}</td>
+                            <td><i class="fa fa-trash" aria-hidden="true" v-on:click="deletelink(link.url)"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
+
+
+        </div>
     </div>
 </body>
 
@@ -45,13 +76,15 @@
         el: '#app',
         data: {
             link: '',
+            price: undefined,
             linksObj: [{
                 url: '',
+                price: undefined,
                 date: ''
             }]
         },
         methods: {
-            logout() {
+            async logout() {
                 fetch('http://localhost:4000/api/logout', {
                     method: 'POST',
                     headers: {
@@ -64,9 +97,10 @@
                     }
                 })
             },
-            addlink() {
+            async addlink() {
                 const obj = {
-                    url: this.link
+                    url: this.link,
+                    price: this.price
                 }
                 fetch('http://localhost:4000/addLink', {
                     method: 'POST',
@@ -78,29 +112,55 @@
                 }).then(res => {
                     if (res.status === 201) {
                         alert('Link Added');
-                        this.link = ''
+                        this.link = '';
+                        this.price = undefined
+                        this.init();
                     } else {
                         res.json().then(data => alert(data));
+                    }
+                })
+            },
+            async deletelink(link) {
+                const obj = {
+                    link: link
+                }
+                fetch('http://localhost:4000/deleteLink', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(obj)
+                }).then(res => {
+                    if (res.status === 200) {
+                        res.json().then(data => alert(data));
+                        this.init();
+                    } else {
+                        res.json().then(data => alert(data));
+                    }
+                })
+
+            },
+            async init() {
+                fetch('http://localhost:4000/api/userDetails', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                }).then(res => {
+                    if (res.status !== 200) {
+                        res.json().then(data => alert(data));
+                    } else {
+                        res.json().then(data => {
+                            this.linksObj = data.links;
+                        });
                     }
                 })
             }
         },
         mounted() {
-            fetch('http://localhost:4000/api/userDetails', {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-            }).then(res => {
-                if (res.status !== 200) {
-                    res.json().then(data => alert(data));
-                } else {
-                    res.json().then(data => {
-                        this.linksObj = data.links;
-                    });
-                }
-            })
+            this.init();
         }
     })
 </script>
