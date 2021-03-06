@@ -11,6 +11,7 @@ interface IUser extends Document {
 
 interface ILink extends Document {
     url: string,
+    price: number
     date: string,
     isDisabled: boolean,
 }

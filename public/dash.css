@@ -3,20 +3,25 @@ body {
     padding: 0;
     font-family: sans-serif;
     overflow: hidden;
+    font-family: 'Arvo';
 }
 
 #app {
     height: 100vh;
     width: 100%;
-    background: #34495e;
     display: grid;
     grid-template-columns: 15% 85%;
 }
 
-#sidebar {
+#main {
     background: #191919;
+}
+
+#sidebar {
+    background: #343A40;
     display: grid;
     grid-template-rows: 10% 74% 8% 8%;
+    z-index: 1;
 }
 
 #header {
@@ -24,7 +29,8 @@ body {
     color: #3498db;
     padding: 20px 10px;
     text-align: center;
-    font-size: 30px;
+    font-size: 25px;
+    /* font-family: "Anton"; */
 }
 
 #user {
@@ -52,7 +58,7 @@ body {
     height: 100%;
     background: transparent;
     color: #2ecc71;
-    border: 2px solid #2ecc71;
+    border: 1px solid #2ecc71;
     outline: none;
     cursor: pointer;
     font-size: 20px;
@@ -63,7 +69,7 @@ body {
     height: 100%;
     background: transparent;
     color: #2ecc71;
-    border: 2px solid #2ecc71;
+    border: 1px solid #2ecc71;
     outline: none;
     cursor: pointer;
     font-size: 20px;
@@ -78,4 +84,145 @@ body {
 
 #dot {
     color: #2ecc71;
+}
+
+#main-head {
+    padding: 20px;
+    color: #2ecc71;
+    text-align: center;
+    /* font-family: 'Anton'; */
+}
+
+#main-input {
+    border: 2px solid #3498db;
+    margin: 40px 650px 20px 650px;
+    text-align: center;
+    padding: 14px 10px;
+    border-radius: 24px;
+    transition: ease-in 0.5s;
+}
+
+#main-input:hover {
+    margin: 40px 350px 20px 350px;
+    border: 2px solid #2ecc71;
+}
+
+#inputMain {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    outline: none;
+    border: none;
+    text-align: center;
+    color: #fff;
+}
+
+#inputSub {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    color: #fff;
+    background: transparent;
+    outline: none;
+    border: none;
+    font-size: 12px;
+}
+
+#inputSub:hover {
+    color: #191919;
+}
+
+#main-add {
+    border: 2px solid #2ecc71;
+    margin: 0 auto;
+    text-align: center;
+    width: 90px;
+    border-radius: 24px;
+    transition: ease-in 0.5s;
+    padding: 14px 10px
+}
+
+#main-add:hover {
+    background: #2ecc71;
+    color: #191919;
+}
+
+
+/* #main-output {
+    border: 2px solid #fff;
+    margin: 50px;
+}
+
+#output-list {
+    border: 1px solid #3498db;
+    padding: 15px;
+    color: #E0E0E0;
+    font-family: Arial, sans-serif;
+    margin-bottom: 10px;
+} */
+
+
+/* li {
+    list-style-type: none;
+    background: #BDBDBD;
+} */
+
+
+/* 
+li:nth-child(odd) {
+    background: #9E9E9E;
+} */
+
+#table {
+    width: 1200px;
+    margin: 0 auto;
+    margin-top: 40px;
+}
+
+.table-head {
+    background: #191919;
+    color: #2ecc71;
+}
+
+.table-body {
+    color: #3498db;
+    font-weight: bolder;
+}
+
+#main-price {
+    border: 2px solid #3498db;
+    margin: 0px 650px 10px 650px;
+    text-align: center;
+    padding: 14px 10px;
+    border-radius: 24px;
+    transition: ease-in 0.5s;
+}
+
+#main-price:hover {
+    margin: 0px 350px 10px 350px;
+    border: 2px solid #2ecc71;
+}
+
+#inputprice {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    outline: none;
+    border: none;
+    text-align: center;
+    color: #fff;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+.fa-trash {
+    font-size: 24px;
+    cursor: pointer;
+    color: #B00020;
 }

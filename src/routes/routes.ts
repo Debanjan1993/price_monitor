@@ -53,6 +53,10 @@ class Routes {
             await this.linkController.createLink(req, res);
         })
 
+        this.router.post('/deleteLink', async (req: Request, res: Response) => {
+            await this.linkController.deleteLink(req, res);
+        })
+
         this.router.get('/test', (req: Request, res: Response) => {
             res.status(200).json('Test Successsful');
         });
