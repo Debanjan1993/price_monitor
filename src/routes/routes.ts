@@ -33,6 +33,10 @@ class Routes {
             res.sendFile(path.join(__dirname, '../../public/dashboard.html'));
         })
 
+        this.router.get('/account', this.middleware.verifySession, (req: Request, res: Response) => {
+            res.sendFile(path.join(__dirname, '../../public/account.html'));
+        })
+
         this.router.post('/api/login', async (req: Request, res: Response) => {
             await this.userController.verifyUser(req, res);
         })
@@ -47,6 +51,10 @@ class Routes {
 
         this.router.get('/api/userDetails', this.middleware.verifySession, async (req: Request, res: Response) => {
             await this.userController.userDetails(req, res);
+        })
+
+        this.router.post('/api/updateInfo', this.middleware.verifySession, async (req: Request, res: Response) => {
+            await this.userController.updateInfo(req, res);
         })
 
         this.router.post('/addLink', async (req: Request, res: Response) => {

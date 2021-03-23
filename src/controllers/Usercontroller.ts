@@ -104,10 +104,53 @@ class UserController {
         const linkIds = user.links;
         const links: ILink[] = await this.linksRepository.getLinksByID(linkIds);
         const userObj = {
-            user :user,
-            links : links
+            user: user,
+            links: links
         }
         return res.status(200).json(userObj);
+    }
+
+    updateInfo = async (req: Request, res: Response) => {
+
+        const originalEmail = req.session.email;
+
+        const { username, email, password, password2 } = req.body;
+
+        if (!username) {
+            return res.status(400).json('Please enter the name');
+        }
+        if (!email) {
+            return res.status(400).json('Please enter the email');
+        }
+        if (!password) {
+            return res.status(400).json('Please enter the password');
+        }
+        if (!password2) {
+            return res.status(400).json('Please confirm the password by entering again');
+        }
+
+        if (password !== password2) {
+            return res.status(400).json('The password entered do not match with each other');
+        }
+
+        const user = await this.userRepository.getUserByEmail(email);
+
+        if (user) {
+            return res.status(400).json('User with this email already exists');
+        }
+
+        const hashedPassword = await this.crypt.createCrypt(password);
+
+        const dbObj: Partial<IUser> = {
+            username: username,
+            email: email,
+            password: hashedPassword
+        }
+
+        await this.userRepository.updateUserInfo(originalEmail, dbObj as IUser)
+
+        return res.status(200).json('User Information Updated');
+
     }
 
 }

@@ -7,6 +7,7 @@ import UserRepository from '../repository/UserRepository';
 import Middleware from '../routes/middleware';
 import Routes from '../routes/routes';
 import LinkController from '../controllers/LinkController';
+import SQSService from '../SQSService';
 
 class DIContainer {
 
@@ -36,6 +37,7 @@ class DIContainer {
             container.bind<Middleware>(Middleware).toSelf();
             container.bind<LinksRepository>(LinksRepository).toSelf();
             container.bind<LinkController>(LinkController).toSelf();
+            container.bind<SQSService>(SQSService).toSelf();
 
             const router = Router();
             container.bind<Router>(Router).toConstantValue(router);

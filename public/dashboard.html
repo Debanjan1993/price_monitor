@@ -25,7 +25,7 @@
                 <span id="dot">●</span> Debanjan
             </div>
             <div id="account">
-                <input id="inputAccount" type="submit" value="Account" />
+                <input id="inputAccount" type="submit" v-on:click="account()" value="Account" />
             </div>
             <div id="logout">
                 <input id="inputLogout" type="submit" v-on:click="logout()" value="Logout" />
@@ -157,6 +157,9 @@
                         });
                     }
                 })
+            },
+            account() {
+                window.location.href = "/account";
             }
         },
         mounted() {
