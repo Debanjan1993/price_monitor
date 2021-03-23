@@ -7,20 +7,41 @@ class UserRepository {
     constructor() { }
 
     getUserByEmail = async (email: string) => {
-        return User.findOne({ email: email }).exec();
+        return await User.findOne({ email: email }).exec();
     }
 
     getFreeUsers = async (skip: number, take: number) => {
-        return User.find({ isPaidUser: false }, null, { skip: skip, limit: take }).exec();
+        return await User.find({ isPaidUser: false }, null, { skip: skip, limit: take }).exec();
     }
 
     getFreeUserCount = async () => {
-        return User.countDocuments({ isPaidUser: false }).exec();
+        return await User.countDocuments({ isPaidUser: false }).exec();
     }
 
     saveUserToDB = async (userObj: IUser) => {
         const user = new User(userObj);
         return await user.save()
+    }
+
+    updateUserInfo = async (originalEmail: string, userObj: IUser) => {
+        return await User.updateOne({
+            email: originalEmail
+        }, {
+            username: userObj.username,
+            email: userObj.email,
+            password: userObj.password
+        })
+    }
+
+    getAllUsersCount = async () => {
+        return await User.countDocuments().exec();
+    }
+
+    getUsers = async (skip: number, take: number) => {
+        return await User.find({}, null, {
+            skip: skip,
+            limit: take
+        })
     }
 
 }

@@ -3,7 +3,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import Routes from './routes/routes';
 import DIContainer from './ioc/DIContainer';
-import connectToDB from './connecToDB';
+import { connectToDB } from './connecToDB';
 import session from 'express-session';
 import config from 'config';
 import path from 'path';

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Arvo' rel='stylesheet'>
+
+    <link rel="stylesheet" href="./accStyle.css">
+</head>
+
+<body>
+
+    <div id="app">
+        <div id="sidebar">
+            <div id="header">
+                Price Monitor Pvt Ltd
+            </div>
+            <div id="user">
+                <span id="dot">●</span> Debanjan
+            </div>
+            <div id="home">
+                <input id="inputHome" type="submit" value="Home" v-on:click="home()" />
+            </div>
+            <div id="logout">
+                <input id="inputLogout" type="submit" v-on:click="logout()" value="Logout" />
+            </div>
+        </div>
+        <div id="main">
+            <div id="main-head">
+                <h1>Dashboard</h1>
+            </div>
+            <div id="main-name">
+                <label></label>
+                <input id="inputName" type="text" v-model="userObj.username" size="50">
+            </div>
+            <div id="main-name">
+                <input id="inputName" type="text" v-model="userObj.email" size="50">
+            </div>
+            <div id="main-name">
+                <input id="inputName" type="password" placeholder="Enter new password" v-model="password" size="50">
+            </div>
+            <div id="main-name">
+                <input id="inputName" type="password" placeholder="Confirm password" v-model="password2" size="50">
+            </div>
+            <div id="main-add">
+                <input id="inputSub" type="submit" v-on:click="updateInfo()" value="UPDATE INFO" />
+            </div>
+
+        </div>
+    </div>
+</body>
+
+
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            userObj: {
+                username: '',
+                email: ''
+            },
+            password: '',
+            password2: ''
+        },
+        methods: {
+            async init() {
+                fetch('http://localhost:4000/api/userDetails', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                }).then(res => {
+                    if (res.status !== 200) {
+                        res.json().then(data => alert(data));
+                    } else {
+                        res.json().then(data => {
+                            this.userObj = data.user;
+                        });
+                    }
+                })
+            },
+
+            async updateInfo() {
+                const obj = {
+                    username: this.userObj.username,
+                    email: this.userObj.email,
+                    password: this.password,
+                    password2: this.password2
+                }
+                const res = await fetch('http://localhost:4000/api/updateInfo', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(obj)
+                });
+
+                if (res.status !== 200) {
+                    res.json().then(data => alert(data));
+                } else {
+                    alert('Updated UserInfo.Please Login again');
+                    await this.logout();
+                }
+
+            },
+            async logout() {
+                fetch('http://localhost:4000/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(res => {
+                    if (res.redirected) {
+                        window.location.href = res.url;
+                    }
+                })
+            },
+            async home() {
+                window.location.href = "/dashboard"
+            }
+        },
+        mounted() {
+            this.init();
+        }
+    })
+</script>
+
+</html>

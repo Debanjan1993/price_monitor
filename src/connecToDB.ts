@@ -1,6 +1,8 @@
 import mongoose, { CallbackError } from 'mongoose';
 import config from 'config';
+import puppeteer, { Browser } from 'puppeteer';
 
+let browser: Browser = undefined;
 
 const connectToDB = async () => {
 
@@ -14,4 +16,9 @@ const connectToDB = async () => {
 
 }
 
-export default connectToDB;
+const puppeteerLaunch = async () => {
+    browser = await puppeteer.launch();
+    console.log(`Puppeteer launched`);
+}
+
+export { connectToDB, puppeteerLaunch, browser };
