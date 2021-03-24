@@ -49,11 +49,11 @@ class Routes {
             await this.userController.logout(req, res);
         })
 
-        this.router.get('/api/userDetails', this.middleware.verifySession, async (req: Request, res: Response) => {
+        this.router.get('/api/userDetails', async (req: Request, res: Response) => {
             await this.userController.userDetails(req, res);
         })
 
-        this.router.post('/api/updateInfo', this.middleware.verifySession, async (req: Request, res: Response) => {
+        this.router.post('/api/updateInfo', async (req: Request, res: Response) => {
             await this.userController.updateInfo(req, res);
         })
 

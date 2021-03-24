@@ -6,6 +6,7 @@ import Crypt from '../crypto/crypt';
 import { ILink, IUser } from '../types/SchemaTypes';
 import moment from 'moment';
 import LinksRepository from '../repository/LinksRepository';
+import { authenticate } from '../decorators/decorators';
 
 @injectable()
 class UserController {
@@ -98,7 +99,8 @@ class UserController {
         })
     }
 
-    userDetails = async (req: Request, res: Response) => {
+    @authenticate
+    async userDetails(req: Request, res: Response) {
         const email = req.session.email;
         const user = await this.userRepository.getUserByEmail(email);
         const linkIds = user.links;
@@ -110,7 +112,8 @@ class UserController {
         return res.status(200).json(userObj);
     }
 
-    updateInfo = async (req: Request, res: Response) => {
+    @authenticate
+    async updateInfo(req: Request, res: Response) {
 
         const originalEmail = req.session.email;
 
