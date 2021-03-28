@@ -23,8 +23,22 @@ class LinksRepository {
     }
 
     deleteLinkByURL = async (url: string) => {
-        return Link.deleteOne({
+        return await Link.deleteOne({
             url: url
+        })
+    }
+
+    getLinkByID = async (id: string) => {
+        return await Link.findOne({
+            _id: id
+        })
+    }
+
+    updateLinkById = async (id: string, link: ILink) => {
+        return await Link.updateOne({
+            _id: id
+        }, {
+            isMailSent: link.isMailSent
         })
     }
 

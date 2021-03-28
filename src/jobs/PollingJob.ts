@@ -7,12 +7,12 @@ import SQSService from '../SQSService'
 
 @injectable()
 class PollingJob {
-    queueName = 'Check_Price'
-    skipCount = 20;
-    takeCount = 20;
-    userRepository: UserRepository;
-    linksRepository: LinksRepository;
-    sqsService: SQSService;
+    private queueName = 'Check_Price'
+    private skipCount = 20;
+    private takeCount = 20;
+    private userRepository: UserRepository;
+    private linksRepository: LinksRepository;
+    private sqsService: SQSService;
     constructor() {
         this.userRepository = DIContainer.container.get(UserRepository);
         this.linksRepository = DIContainer.container.get(LinksRepository);
@@ -49,3 +49,5 @@ class PollingJob {
 
 
 }
+
+export default PollingJob;

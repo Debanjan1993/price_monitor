@@ -14,6 +14,7 @@ interface ILink extends Document {
     price: number
     date: string,
     isDisabled: boolean,
+    isMailSent: boolean
 }
 
 export { IUser, ILink };
