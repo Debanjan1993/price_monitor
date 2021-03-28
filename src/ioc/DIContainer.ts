@@ -8,6 +8,10 @@ import Middleware from '../routes/middleware';
 import Routes from '../routes/routes';
 import LinkController from '../controllers/LinkController';
 import SQSService from '../SQSService';
+import MailJob from '../jobs/MailJob';
+import CheckPrice from '../jobs/CheckPriceJob';
+import PollingJob from '../jobs/PollingJob';
+import QueueProcessor from '../queueProcessor';
 
 class DIContainer {
 
@@ -38,6 +42,11 @@ class DIContainer {
             container.bind<LinksRepository>(LinksRepository).toSelf();
             container.bind<LinkController>(LinkController).toSelf();
             container.bind<SQSService>(SQSService).toSelf();
+            container.bind<QueueProcessor>(QueueProcessor).toSelf();
+
+            container.bind<MailJob>(MailJob).toSelf();
+            container.bind<CheckPrice>(CheckPrice).toSelf();
+            container.bind<PollingJob>(PollingJob).toSelf();
 
             const router = Router();
             container.bind<Router>(Router).toConstantValue(router);

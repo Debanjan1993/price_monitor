@@ -18,9 +18,14 @@ const urlfilter = async (url: string): Promise<string> => {
         return Sites.snapdeal;
     } else if (url.includes('ajio')) {
         return Sites.ajio;
-    }else{
+    } else {
         return undefined;
     }
 }
 
-export {urlfilter}
+enum QueueNames {
+    mailUser = 'Mail_User',
+    checkPrice = 'Check_Price'
+}
+
+export { urlfilter, QueueNames }

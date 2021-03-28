@@ -50,3 +50,5 @@ class CheckPrice {
     }
 
 }
+
+export default CheckPrice;
