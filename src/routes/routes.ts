@@ -57,6 +57,10 @@ class Routes {
             await this.userController.updateInfo(req, res);
         })
 
+        this.router.get('/api/confirmationMail/:code', async (req: Request, res: Response) => {
+            await this.userController.getUserConfirmation(req, res);
+        })
+
         this.router.post('/addLink', async (req: Request, res: Response) => {
             await this.linkController.createLink(req, res);
         })

@@ -7,16 +7,24 @@ import { ILink, IUser } from '../types/SchemaTypes';
 import moment from 'moment';
 import LinksRepository from '../repository/LinksRepository';
 import { authenticate } from '../decorators/decorators';
+import CryptoJS from 'crypto-js';
+import config from 'config';
+import { QueueNames } from '../util/util';
+import SQSService from '../SQSService';
+import { ConfirmationMail } from '../types/Intefaces';
 
 @injectable()
 class UserController {
     userRepository: UserRepository;
     crypt: Crypt;
     linksRepository: LinksRepository;
+    sqsService: SQSService;
+    private secretKey: string = config.get<string>("secretKey");
     constructor() {
         this.userRepository = DIContainer.container.get(UserRepository);
         this.crypt = DIContainer.container.get(Crypt);
         this.linksRepository = DIContainer.container.get(LinksRepository);
+        this.sqsService = DIContainer.container.get(SQSService);
     }
 
     addUser = async (req: Request, res: Response) => {
@@ -52,10 +60,20 @@ class UserController {
             email: email,
             password: hashedPassword,
             dateOfJoining: moment().unix(),
-            isPaidUser: false
+            isPaidUser: false,
+            isVerified: false
         }
 
         await this.userRepository.saveUserToDB(dbObj as IUser);
+
+        const encryptedEmail = await this.encryptEmail(email);
+
+        const mailBody: ConfirmationMail = {
+            userEmail: email,
+            code: encodeURIComponent(encryptedEmail)
+        }
+
+        await this.sqsService.sendMessage(QueueNames.confirmationMail, mailBody, false)
 
         res.status(201).json('User Successfully Created');
 
@@ -154,6 +172,28 @@ class UserController {
 
         return res.status(200).json('User Information Updated');
 
+    }
+
+    getUserConfirmation = async (req: Request, res: Response) => {
+
+        const code = decodeURIComponent(req.params.code);
+        const email = await this.decryptEmail(code);
+
+        await this.userRepository.updateUserConfirmationStatus(email);
+
+        res.redirect('/login');
+
+    }
+
+    encryptEmail = async (email: string): Promise<string> => {
+        const encryptedEmail = CryptoJS.AES.encrypt(email, this.secretKey).toString();
+        return encryptedEmail;
+    }
+
+    decryptEmail = async (code: string): Promise<string> => {
+        const bytes = CryptoJS.AES.decrypt(code, this.secretKey);
+        const email = bytes.toString(CryptoJS.enc.Utf8);
+        return email;
     }
 
 }

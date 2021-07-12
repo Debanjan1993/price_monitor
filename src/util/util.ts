@@ -25,7 +25,10 @@ const urlfilter = async (url: string): Promise<string> => {
 
 enum QueueNames {
     mailUser = 'Mail_User',
-    checkPrice = 'Check_Price'
+    checkPrice = 'Check_Price',
+    confirmationMail = 'Confirmation_Mail'
 }
 
-export { urlfilter, QueueNames }
+
+
+export { urlfilter, QueueNames}

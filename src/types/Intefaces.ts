@@ -6,4 +6,9 @@ interface PollMsgBody {
     username: string
 }
 
-export {PollMsgBody};
+interface ConfirmationMail {
+    userEmail: string,
+    code: string
+}
+
+export { PollMsgBody, ConfirmationMail };

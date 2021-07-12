@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
     password: { type: String, required: true },
     dateOfJoining: { type: Number, required: true },
     isPaidUser: { type: Boolean, required: true },
+    isVerified: { type: Boolean, required: true },
     links: [{ type: Schema.Types.ObjectId, ref: 'Links' }]
 })
 

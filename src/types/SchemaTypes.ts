@@ -6,6 +6,7 @@ interface IUser extends Document {
     password: string,
     dateOfJoining: number,
     isPaidUser: boolean,
+    isVerified: boolean,
     links: any;
 }
 

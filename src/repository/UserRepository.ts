@@ -44,6 +44,14 @@ class UserRepository {
         })
     }
 
+    updateUserConfirmationStatus = async (email: string) => {
+        return await User.updateOne({
+            email: email
+        }, {
+            isVerified: true
+        })
+    }
+
 }
 
 export default UserRepository;
