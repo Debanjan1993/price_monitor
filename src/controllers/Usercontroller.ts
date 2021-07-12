@@ -12,6 +12,7 @@ import config from 'config';
 import { QueueNames } from '../util/util';
 import SQSService from '../SQSService';
 import { ConfirmationMail } from '../types/Intefaces';
+import JobLogger from '../Logger';
 
 @injectable()
 class UserController {
@@ -19,12 +20,14 @@ class UserController {
     crypt: Crypt;
     linksRepository: LinksRepository;
     sqsService: SQSService;
+    jobLogger: JobLogger;
     private secretKey: string = config.get<string>("secretKey");
     constructor() {
         this.userRepository = DIContainer.container.get(UserRepository);
         this.crypt = DIContainer.container.get(Crypt);
         this.linksRepository = DIContainer.container.get(LinksRepository);
         this.sqsService = DIContainer.container.get(SQSService);
+        this.jobLogger = DIContainer.container.get(JobLogger);
     }
 
     addUser = async (req: Request, res: Response) => {

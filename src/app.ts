@@ -8,6 +8,7 @@ import session from 'express-session';
 import config from 'config';
 import path from 'path';
 import MongoStore from 'connect-mongo';
+import logger from 'pino';
 
 (async function () {
 
@@ -36,6 +37,6 @@ import MongoStore from 'connect-mongo';
     const routes = DIContainer.container.get(Routes);
     routes.init(app);
 
-    app.listen(port, () => console.log(`App started on port ${port}`));
+    app.listen(port, () => logger().info(`App started on port ${port}`));
 
 })()

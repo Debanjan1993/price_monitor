@@ -3,7 +3,8 @@ import LinksRepository from "../repository/LinksRepository";
 import UserRepository from "../repository/UserRepository";
 import DIContainer from '../ioc/DIContainer';
 import { PollMsgBody } from '../types/Intefaces';
-import SQSService from '../SQSService'
+import SQSService from '../SQSService';
+import JobLogger from '../Logger';
 
 @injectable()
 class PollingJob {
@@ -13,14 +14,17 @@ class PollingJob {
     private userRepository: UserRepository;
     private linksRepository: LinksRepository;
     private sqsService: SQSService;
+    jobLogger: JobLogger;
+    jobName: string = "Polling Job";
     constructor() {
         this.userRepository = DIContainer.container.get(UserRepository);
         this.linksRepository = DIContainer.container.get(LinksRepository);
         this.sqsService = DIContainer.container.get(SQSService);
+        this.jobLogger = DIContainer.container.get(JobLogger);
     }
 
     run = async () => {
-        console.log(`Db Polling Job Started`);
+        this.jobLogger.info(this.jobName, `Db Polling Job Started`);
 
         const totalUsers = await this.userRepository.getAllUsersCount();
         let linkBody: PollMsgBody[] = [];
@@ -43,7 +47,7 @@ class PollingJob {
             await this.sqsService.sendMessage(this.queueName, x, false);
         }))
 
-        console.log('Db Polling Job Ended');
+        this.jobLogger.info(this.jobName, 'Db Polling Job Ended');
 
     }
 

@@ -5,19 +5,23 @@ import DIContainer from '../ioc/DIContainer'
 import SQSService from '../SQSService';
 import { urlfilter } from '../util/util';
 import { browser } from '../connecToDB'
+import JobLogger from '../Logger';
 
 @injectable()
 class CheckPrice {
     queueName = 'Mail_User'
     sqsService: SQSService;
+    jobLogger: JobLogger;
+    jobName: string = "Check Price Job";
     constructor() {
         this.sqsService = DIContainer.container.get(SQSService);
+        this.jobLogger = DIContainer.container.get(JobLogger);
     }
 
     run = async (msgBody: PollMsgBody) => {
-        console.log(`Check Price Job Started`);
+        this.jobLogger.info(this.jobName, `Check Price Job Started`);
         await this.checkPrice(msgBody);
-        console.log('Check Price Job Ended');
+        this.jobLogger.info(this.jobName, 'Check Price Job Ended');
 
     }
 
@@ -27,7 +31,7 @@ class CheckPrice {
         const priceElement = await urlfilter(url);
 
         if (!priceElement) {
-            console.log(`Site not found`);
+            this.jobLogger.error(this.jobName, `Site not found`);
             return;
         }
 

@@ -12,6 +12,7 @@ import MailJob from '../jobs/MailJob';
 import CheckPrice from '../jobs/CheckPriceJob';
 import PollingJob from '../jobs/PollingJob';
 import QueueProcessor from '../queueProcessor';
+import JobLogger from '../Logger';
 
 class DIContainer {
 
@@ -43,6 +44,7 @@ class DIContainer {
             container.bind<LinkController>(LinkController).toSelf();
             container.bind<SQSService>(SQSService).toSelf();
             container.bind<QueueProcessor>(QueueProcessor).toSelf();
+            container.bind<JobLogger>(JobLogger).toSelf();
 
             container.bind<MailJob>(MailJob).toSelf();
             container.bind<CheckPrice>(CheckPrice).toSelf();

@@ -5,6 +5,7 @@ import { GetQueueUrlResult, ReceiveMessageResult } from 'aws-sdk/clients/sqs';
 import MailJob from "./jobs/MailJob";
 import CheckPrice from "./jobs/CheckPriceJob";
 import { injectable } from "inversify";
+import JobLogger from "./Logger";
 
 @injectable()
 class QueueProcessor {
@@ -15,11 +16,14 @@ class QueueProcessor {
     private confirmationEmailQueueURL: string;
     private userMailJob: MailJob;
     private checkPriceJob: CheckPrice;
+    private jobLogger: JobLogger;
+    private jobName: string = "Queue Processor";
 
     constructor() {
         this.sqsService = DIContainer.container.get(SQSService);
         this.userMailJob = DIContainer.container.get(MailJob);
         this.checkPriceJob = DIContainer.container.get(CheckPrice);
+        this.jobLogger = DIContainer.container.get(JobLogger);
     }
 
     getQueueURL = async () => {
@@ -39,7 +43,7 @@ class QueueProcessor {
                 }));
             }
         } catch (e) {
-            console.error(`Unable to get messages from AWS for queueURL :${this.userMailQueueURL}`);
+            this.jobLogger.error(this.jobName, `Unable to get messages from AWS for queueURL :${this.userMailQueueURL}`);
         }
     }
 
@@ -54,7 +58,7 @@ class QueueProcessor {
                 }));
             }
         } catch (e) {
-            console.error(`Unable to get messages from AWS for queueURL :${this.userMailQueueURL}`);
+            this.jobLogger.error(this.jobName, `Unable to get messages from AWS for queueURL :${this.userMailQueueURL}`);
         }
     }
 
@@ -69,7 +73,7 @@ class QueueProcessor {
                 }));
             }
         } catch (e) {
-            console.error(`Unable to get messages from AWS for queueURL :${this.userMailQueueURL}`);
+            this.jobLogger.error(this.jobName, `Unable to get messages from AWS for queueURL :${this.userMailQueueURL}`);
         }
     }
 }
