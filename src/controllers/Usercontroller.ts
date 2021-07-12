@@ -21,6 +21,7 @@ class UserController {
     linksRepository: LinksRepository;
     sqsService: SQSService;
     jobLogger: JobLogger;
+    jobName: string = "User Controller";
     private secretKey: string = config.get<string>("secretKey");
     constructor() {
         this.userRepository = DIContainer.container.get(UserRepository);
@@ -31,82 +32,91 @@ class UserController {
     }
 
     addUser = async (req: Request, res: Response) => {
-        const { personName, email, password, password2 } = req.body;
+        try {
+            const { personName, email, password, password2 } = req.body;
 
-        if (!personName) {
-            return res.status(400).json('Please enter the name');
+            if (!personName) {
+                return res.status(400).json('Please enter the name');
+            }
+            if (!email) {
+                return res.status(400).json('Please enter the email');
+            }
+            if (!password) {
+                return res.status(400).json('Please enter the password');
+            }
+            if (!password2) {
+                return res.status(400).json('Please confirm the password by entering again');
+            }
+
+            if (password !== password2) {
+                return res.status(400).json('The password entered do not match with each other');
+            }
+
+            const user = await this.userRepository.getUserByEmail(email);
+
+            if (user) {
+                return res.status(400).json('User with this email already exists');
+            }
+
+            const hashedPassword = await this.crypt.createCrypt(password);
+
+            const dbObj: Partial<IUser> = {
+                username: personName,
+                email: email,
+                password: hashedPassword,
+                dateOfJoining: moment().unix(),
+                isPaidUser: false,
+                isVerified: false
+            }
+
+            await this.userRepository.saveUserToDB(dbObj as IUser);
+
+            const encryptedEmail = await this.encryptEmail(email);
+
+            const mailBody: ConfirmationMail = {
+                userEmail: email,
+                code: encodeURIComponent(encryptedEmail)
+            }
+
+            await this.sqsService.sendMessage(QueueNames.confirmationMail, mailBody, false)
+
+            res.status(201).json('User Successfully Created');
+        } catch (err) {
+            this.jobLogger.error(this.jobName, `Exception : ${err}`);
+            return res.status(500).json('Internal Server Error');
         }
-        if (!email) {
-            return res.status(400).json('Please enter the email');
-        }
-        if (!password) {
-            return res.status(400).json('Please enter the password');
-        }
-        if (!password2) {
-            return res.status(400).json('Please confirm the password by entering again');
-        }
-
-        if (password !== password2) {
-            return res.status(400).json('The password entered do not match with each other');
-        }
-
-        const user = await this.userRepository.getUserByEmail(email);
-
-        if (user) {
-            return res.status(400).json('User with this email already exists');
-        }
-
-        const hashedPassword = await this.crypt.createCrypt(password);
-
-        const dbObj: Partial<IUser> = {
-            username: personName,
-            email: email,
-            password: hashedPassword,
-            dateOfJoining: moment().unix(),
-            isPaidUser: false,
-            isVerified: false
-        }
-
-        await this.userRepository.saveUserToDB(dbObj as IUser);
-
-        const encryptedEmail = await this.encryptEmail(email);
-
-        const mailBody: ConfirmationMail = {
-            userEmail: email,
-            code: encodeURIComponent(encryptedEmail)
-        }
-
-        await this.sqsService.sendMessage(QueueNames.confirmationMail, mailBody, false)
-
-        res.status(201).json('User Successfully Created');
-
     }
 
     verifyUser = async (req: Request, res: Response) => {
-        const { username, password } = req.body;
-        if (!username) {
-            return res.status(400).json('Please enter the username');
+        try {
+            const { username, password } = req.body;
+            if (!username) {
+                return res.status(400).json('Please enter the username');
+            }
+            if (!password) {
+                return res.status(400).json('Please enter the password');
+            }
+
+            const user = await this.userRepository.getUserByEmail(username);
+
+            if (!user) {
+                return res.status(400).json('No user exists with the entered email please sign up now');
+            }
+
+            const dbPassword = user.password;
+
+            const isMatched = await this.crypt.comparePassword(password, dbPassword);
+
+            if (!isMatched) {
+                return res.status(401).json('The password entered is not correct');
+            }
+
+            req.session.email = username
+            return res.status(200).json('Signed In');
+        } catch (err) {
+            this.jobLogger.error(this.jobName, `Exception : ${err}`);
+            return res.status(500).json('Internal Server Error');
         }
-        if (!password) {
-            return res.status(400).json('Please enter the password');
-        }
-
-        const user = await this.userRepository.getUserByEmail(username);
-
-        if (!user) {
-            return res.status(400).json('No user exists with the entered email please sign up now');
-        }
-
-        const dbPassword = user.password;
-
-        const isMatched = await this.crypt.comparePassword(password, dbPassword);
-
-        if (!isMatched) {
-            return res.status(401).json('The password entered is not correct');
-        }
-
-        req.session.email = username
-        return res.status(200).json('Signed In');
 
     }
 
@@ -122,70 +132,82 @@ class UserController {
 
     @authenticate
     async userDetails(req: Request, res: Response) {
-        const email = req.session.email;
-        const user = await this.userRepository.getUserByEmail(email);
-        const linkIds = user.links;
-        const links: ILink[] = await this.linksRepository.getLinksByID(linkIds);
-        const userObj = {
-            user: user,
-            links: links
+        try {
+            const email = req.session.email;
+            const user = await this.userRepository.getUserByEmail(email);
+            const linkIds = user.links;
+            const links: ILink[] = await this.linksRepository.getLinksByID(linkIds);
+            const userObj = {
+                user: user,
+                links: links
+            }
+            return res.status(200).json(userObj);
+        } catch (err) {
+            this.jobLogger.error(this.jobName, `Exception : ${err}`);
+            return res.status(500).json('Internal Server Error');
         }
-        return res.status(200).json(userObj);
     }
 
     @authenticate
     async updateInfo(req: Request, res: Response) {
+        try {
+            const originalEmail = req.session.email;
 
-        const originalEmail = req.session.email;
+            const { username, email, password, password2 } = req.body;
 
-        const { username, email, password, password2 } = req.body;
+            if (!username) {
+                return res.status(400).json('Please enter the name');
+            }
+            if (!email) {
+                return res.status(400).json('Please enter the email');
+            }
+            if (!password) {
+                return res.status(400).json('Please enter the password');
+            }
+            if (!password2) {
+                return res.status(400).json('Please confirm the password by entering again');
+            }
 
-        if (!username) {
-            return res.status(400).json('Please enter the name');
+            if (password !== password2) {
+                return res.status(400).json('The password entered do not match with each other');
+            }
+
+            const user = await this.userRepository.getUserByEmail(email);
+
+            if (user) {
+                return res.status(400).json('User with this email already exists');
+            }
+
+            const hashedPassword = await this.crypt.createCrypt(password);
+
+            const dbObj: Partial<IUser> = {
+                username: username,
+                email: email,
+                password: hashedPassword
+            }
+
+            await this.userRepository.updateUserInfo(originalEmail, dbObj as IUser)
+
+            return res.status(200).json('User Information Updated');
+        } catch (err) {
+            this.jobLogger.error(this.jobName, `Exception : ${err}`);
+            return res.status(500).json('Internal Server Error');
         }
-        if (!email) {
-            return res.status(400).json('Please enter the email');
-        }
-        if (!password) {
-            return res.status(400).json('Please enter the password');
-        }
-        if (!password2) {
-            return res.status(400).json('Please confirm the password by entering again');
-        }
-
-        if (password !== password2) {
-            return res.status(400).json('The password entered do not match with each other');
-        }
-
-        const user = await this.userRepository.getUserByEmail(email);
-
-        if (user) {
-            return res.status(400).json('User with this email already exists');
-        }
-
-        const hashedPassword = await this.crypt.createCrypt(password);
-
-        const dbObj: Partial<IUser> = {
-            username: username,
-            email: email,
-            password: hashedPassword
-        }
-
-        await this.userRepository.updateUserInfo(originalEmail, dbObj as IUser)
-
-        return res.status(200).json('User Information Updated');
 
     }
 
     getUserConfirmation = async (req: Request, res: Response) => {
+        try {
+            const code = decodeURIComponent(req.params.code);
+            const email = await this.decryptEmail(code);
 
-        const code = decodeURIComponent(req.params.code);
-        const email = await this.decryptEmail(code);
+            await this.userRepository.updateUserConfirmationStatus(email);
 
-        await this.userRepository.updateUserConfirmationStatus(email);
-
-        res.redirect('/login');
-
+            res.redirect('/login');
+        } catch (err) {
+            this.jobLogger.error(this.jobName, `Exception : ${err}`);
+            return res.status(500).json('Internal Server Error');
+        }
     }
 
     encryptEmail = async (email: string): Promise<string> => {

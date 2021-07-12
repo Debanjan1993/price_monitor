@@ -1,5 +1,5 @@
 {
-    "mongoUri": "mongodb://127.0.0.1:27017/price_monitor",
+    "mongoUri": "mongodb+srv://debanjan:v81qo7B7MwGiUslM@cluster0.q0px3.mongodb.net/price_monitor?retryWrites=true&w=majority",
     "sessionKey": "nvkLCHJwzfg117le",
     "sqs": {
         "accessKeyId": "AKIAZVWKQASVLKZJ7QV4",

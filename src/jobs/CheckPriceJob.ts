@@ -20,7 +20,11 @@ class CheckPrice {
 
     run = async (msgBody: PollMsgBody) => {
         this.jobLogger.info(this.jobName, `Check Price Job Started`);
-        await this.checkPrice(msgBody);
+        try {
+            await this.checkPrice(msgBody);
+        } catch (err) {
+            this.jobLogger.error(this.jobName, `Exception : ${err}`);
+        }
         this.jobLogger.info(this.jobName, 'Check Price Job Ended');
 
     }
