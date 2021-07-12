@@ -1,9 +1,10 @@
-import { PollMsgBody } from '../types/Intefaces';
+import { PollMsgBody, ConfirmationMail } from '../types/Intefaces';
 import UserRepository from '../repository/UserRepository';
 import LinksRepository from '../repository/LinksRepository';
 import DIContainer from '../ioc/DIContainer';
 import { transporter } from '../Mail';
 import { injectable } from 'inversify';
+import config from 'config';
 
 @injectable()
 class MailJob {
@@ -41,6 +42,27 @@ class MailJob {
         console.log(info.messageId);
         console.log(`Mailing job to customer ends`);
 
+
+    }
+
+    confirmationMail = async (msgBody: ConfirmationMail) => {
+        
+        console.log(`Confirmation Mail Job Started for user ${msgBody.userEmail}`);
+        const email = msgBody.userEmail;
+        const code = msgBody.code;
+        const url = `${config.get<string>("baseUrl")}confirmationMail/${code}`;
+
+        console.log(`Sending mail to user ${email}`);
+        const info = await transporter.sendMail({
+            from: '"Price Monitor Private Lmited" <debanjan.dey999@gmail.com>',
+            to: email,
+            subject: 'Account Confirmation mail',
+            text: `Please click on the link below to confirm your email address`,
+            html: `<a href="${url}">Link</a>`
+        })
+
+        console.log(info.messageId);
+        console.log(`Ending Confirmation mail job`);
 
     }
 }

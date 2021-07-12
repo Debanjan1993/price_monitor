@@ -18,4 +18,8 @@ import QueueProcessor from './queueProcessor';
         await queueProcessor.userMail();
     })
 
+    new CronJob('*/20 * * * * *', async () => {
+        await queueProcessor.confirmationMail();
+    })
+
 })();
