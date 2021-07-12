@@ -12,31 +12,35 @@ import logger from 'pino';
 
 (async function () {
 
-    const app = express();
-    const port = process.env.PORT || 4000;
+    try {
+        const app = express();
+        const port = process.env.PORT || 4000;
 
-    app.use(bodyParser.json());
-    app.use(express.static(path.join(__dirname, '../public')))
+        app.use(bodyParser.json());
+        app.use(express.static(path.join(__dirname, '../public')))
 
-    await connectToDB();
+        await connectToDB();
 
-    const sessionStore: MongoStore = MongoStore.create({
-        mongoUrl: config.get<string>("mongoUri"),
-        collectionName: 'sessions'
-    })
+        const sessionStore: MongoStore = MongoStore.create({
+            mongoUrl: config.get<string>("mongoUri"),
+            collectionName: 'sessions'
+        })
 
-    app.use(session({
-        store: sessionStore,
-        secret: config.get<string>("sessionKey"),
-        resave: false,
-        saveUninitialized: false
-    }))
+        app.use(session({
+            store: sessionStore,
+            secret: config.get<string>("sessionKey"),
+            resave: false,
+            saveUninitialized: false
+        }))
 
-    await DIContainer.instance.init();
+        await DIContainer.instance.init();
 
-    const routes = DIContainer.container.get(Routes);
-    routes.init(app);
+        const routes = DIContainer.container.get(Routes);
+        routes.init(app);
 
-    app.listen(port, () => logger().info(`App started on port ${port}`));
+        app.listen(port, () => logger().info(`App started on port ${port}`));
+    } catch (err) {
+        logger().error(`Exception while running application : ${err}`);
+    }
 
 })()

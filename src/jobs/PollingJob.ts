@@ -24,31 +24,34 @@ class PollingJob {
     }
 
     run = async () => {
-        this.jobLogger.info(this.jobName, `Db Polling Job Started`);
+        try {
+            this.jobLogger.info(this.jobName, `Db Polling Job Started`);
 
-        const totalUsers = await this.userRepository.getAllUsersCount();
-        let linkBody: PollMsgBody[] = [];
-        for (let i = 0; i <= totalUsers; i = i + this.skipCount) {
-            const users = await this.userRepository.getUsers(i, this.takeCount);
-            await Promise.all(users.map(async user => {
-                const linksObj: string[] = user.links;
-                const links = await this.linksRepository.getLinksByID(linksObj);
-                await Promise.all(links.map(async link => {
-                    linkBody.push({
-                        link: link,
-                        userEmail: user.email,
-                        username: user.username
-                    })
+            const totalUsers = await this.userRepository.getAllUsersCount();
+            let linkBody: PollMsgBody[] = [];
+            for (let i = 0; i <= totalUsers; i = i + this.skipCount) {
+                const users = await this.userRepository.getUsers(i, this.takeCount);
+                await Promise.all(users.map(async user => {
+                    const linksObj: string[] = user.links;
+                    const links = await this.linksRepository.getLinksByID(linksObj);
+                    await Promise.all(links.map(async link => {
+                        linkBody.push({
+                            link: link,
+                            userEmail: user.email,
+                            username: user.username
+                        })
+                    }))
                 }))
+            }
+
+            await Promise.all(linkBody.map(async x => {
+                await this.sqsService.sendMessage(this.queueName, x, false);
             }))
+
+            this.jobLogger.info(this.jobName, 'Db Polling Job Ended');
+        } catch (err) {
+            this.jobLogger.error(this.jobName, `Exception : ${err}`);
         }
-
-        await Promise.all(linkBody.map(async x => {
-            await this.sqsService.sendMessage(this.queueName, x, false);
-        }))
-
-        this.jobLogger.info(this.jobName, 'Db Polling Job Ended');
-
     }
 
 
