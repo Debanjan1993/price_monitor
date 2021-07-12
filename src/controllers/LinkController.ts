@@ -6,12 +6,15 @@ import validUrl from 'valid-url';
 import { ILink } from "../types/SchemaTypes";
 import moment from 'moment';
 import session from "express-session";
+import JobLogger from "../Logger";
 
 @injectable()
 class LinkController {
     linksRepository: LinksRepository;
+    jobLogger: JobLogger
     constructor() {
         this.linksRepository = DIContainer.container.get(LinksRepository);
+        this.jobLogger = DIContainer.container.get(JobLogger);
     }
 
     createLink = async (req: Request, res: Response) => {

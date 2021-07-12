@@ -5,16 +5,21 @@ import DIContainer from '../ioc/DIContainer';
 import { transporter } from '../Mail';
 import { injectable } from 'inversify';
 import config from 'config';
+import JobLogger from '../Logger';
 
 @injectable()
 class MailJob {
     linksRepository: LinksRepository;
+    jobLogger: JobLogger;
+    jobName: string = "Mail Job";
+    jobNameTemp: string = "Confirmation Mail Job";
     constructor() {
         this.linksRepository = DIContainer.container.get(LinksRepository);
+        this.jobLogger = DIContainer.container.get(JobLogger);
     }
 
     run = async (msgBody: PollMsgBody) => {
-        console.log(`Mailing Job to customer started`);
+        this.jobLogger.info(this.jobName, `Mailing Job to customer started`);
 
         const linkId = msgBody.link.id;
         const url = msgBody.link.url;
@@ -22,7 +27,7 @@ class MailJob {
         const name = msgBody.username;
         const link = await this.linksRepository.getLinkByID(linkId);
         if (link.isMailSent) {
-            console.log(`Mail has already been sent to the customer ${msgBody.userEmail} for linkID : ${linkId}`);
+            this.jobLogger.warn(this.jobName, `Mail has already been sent to the customer ${msgBody.userEmail} for linkID : ${linkId}`);
             return;
         }
 
@@ -39,20 +44,20 @@ class MailJob {
             await this.linksRepository.updateLinkById(linkId, link)
         }
 
-        console.log(info.messageId);
-        console.log(`Mailing job to customer ends`);
+        this.jobLogger.info(this.jobName, info.messageId);
+        this.jobLogger.info(this.jobName, `Mailing job to customer ends`);
 
 
     }
 
     confirmationMail = async (msgBody: ConfirmationMail) => {
-        
-        console.log(`Confirmation Mail Job Started for user ${msgBody.userEmail}`);
+
+        this.jobLogger.info(this.jobNameTemp, `Confirmation Mail Job Started for user ${msgBody.userEmail}`);
         const email = msgBody.userEmail;
         const code = msgBody.code;
         const url = `${config.get<string>("baseUrl")}confirmationMail/${code}`;
 
-        console.log(`Sending mail to user ${email}`);
+        this.jobLogger.info(this.jobNameTemp, `Sending mail to user ${email}`);
         const info = await transporter.sendMail({
             from: '"Price Monitor Private Lmited" <debanjan.dey999@gmail.com>',
             to: email,
@@ -61,8 +66,8 @@ class MailJob {
             html: `<a href="${url}">Link</a>`
         })
 
-        console.log(info.messageId);
-        console.log(`Ending Confirmation mail job`);
+        this.jobLogger.info(this.jobNameTemp, info.messageId);
+        this.jobLogger.info(this.jobNameTemp, `Ending Confirmation mail job`);
 
     }
 }

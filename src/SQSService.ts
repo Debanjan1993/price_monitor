@@ -2,17 +2,22 @@ import { AWSError, SQS } from 'aws-sdk';
 import { CreateQueueRequest, CreateQueueResult, DeleteQueueRequest, GetQueueUrlRequest, GetQueueUrlResult, ReceiveMessageRequest, ReceiveMessageResult, SendMessageRequest, SendMessageResult } from 'aws-sdk/clients/sqs';
 import config from 'config';
 import { injectable } from 'inversify';
+import JobLogger from './Logger';
+import DIContainer from './ioc/DIContainer';
 
 @injectable()
 class SQSService {
     sqs: SQS;
+    jobLogger: JobLogger;
+    jobName: string = "SQS Service"
     constructor() {
         this.sqs = new SQS({
             accessKeyId: config.get<string>('sqs.accessKeyId'),
             secretAccessKey: config.get<string>('sqs.secretAccessKey'),
             region: config.get<string>('sqs.region'),
             correctClockSkew: true
-        })
+        });
+        this.jobLogger = DIContainer.container.get(JobLogger);
     }
 
     createStandardQueue = async (queueName: string) => {
@@ -27,7 +32,7 @@ class SQSService {
         return new Promise<any>((resolve, reject) => {
             this.sqs.createQueue(params, (err: AWSError, data: CreateQueueResult) => {
                 if (err) {
-                    console.log(`Error creating standard queue ${err}`);
+                    this.jobLogger.error(this.jobName, `Error creating standard queue ${err}`);
                     reject(err);
                 } else {
                     resolve(data);
@@ -49,7 +54,7 @@ class SQSService {
         return new Promise((resolve, reject) => {
             this.sqs.createQueue(params, (err: AWSError, data: CreateQueueResult) => {
                 if (err) {
-                    console.log(`Error creating FIFO queue`);
+                    this.jobLogger.error(this.jobName, `Error creating FIFO queue`);
                     reject(err);
                 } else {
                     resolve(data);
@@ -67,7 +72,7 @@ class SQSService {
         return new Promise((resolve, reject) => {
             this.sqs.deleteQueue(params, (err, data) => {
                 if (err) {
-                    console.log(`Error deleting Queue ${queueURL}`);
+                    this.jobLogger.error(this.jobName, `Error deleting Queue ${queueURL}`);
                     reject(err);
                 } else {
                     resolve(data);
@@ -107,7 +112,7 @@ class SQSService {
         return new Promise((resolve, reject) => {
             this.sqs.sendMessage(params, (err: AWSError, data: SendMessageResult) => {
                 if (err) {
-                    console.log(`Error while sending message to queue ${queueName}`);
+                    this.jobLogger.error(this.jobName, `Error while sending message to queue ${queueName}`);
                     reject(err);
                 } else {
                     resolve(data);
@@ -126,7 +131,7 @@ class SQSService {
         return new Promise((resolve, reject) => {
             this.sqs.receiveMessage(params, (err: AWSError, data: ReceiveMessageResult) => {
                 if (err) {
-                    console.log(`Error while receiving message from queue`);
+                    this.jobLogger.error(this.jobName, `Error while receiving message from queue`);
                     reject(err);
                 } else {
                     resolve(data);
