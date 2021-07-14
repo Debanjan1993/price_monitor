@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
 </head>
@@ -30,7 +33,6 @@
         </div>
     </div>
 </body>
-
 <script>
     const app = new Vue({
         el: '#app',
@@ -44,7 +46,7 @@
                     username: this.username,
                     password: this.password
                 }
-                fetch('http://localhost:4000/api/login', {
+                fetch('/api/login', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -55,10 +57,14 @@
                     if (res.status === 200) {
                         window.location.href = "/dashboard"
                     } else {
-                        res.json().then(data => alert(data));
+                        res.json().then(data => toastr.error(data));
                     }
                 })
             }
+        },
+        mounted() {
+            toastr.options.timeOut = 4 * 1000;
+            toastr.options.showMethod = 'slideDown';
         }
     })
 </script>
