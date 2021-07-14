@@ -5,6 +5,10 @@
     "scripts": {
         "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/app.ts\"",
         "dev": "tsc && node dist/app.js",
+        "prod-start": "NODE_ENV=production node dist/app.js | pino-papertrail --host logs6.papertrailapp.com --port 28310 --appname price-monitor-server",
+        "prod-startpoll": "NODE_ENV=production node dist/serverPolling.js | pino-papertrail --host logs6.papertrailapp.com --port 28310 --appname price-monitor-polluser",
+        "prod-checkprice": "NODE_ENV=production node dist/serverCheckPrice.js | pino-papertrail --host logs6.papertrailapp.com --port 28310 --appname price-monitor-checkprice",
+        "prod-emailuser": "NODE_ENV=production node dist/serverMailJob.js | pino-papertrail --host logs6.papertrailapp.com --port 28310 --appname price-monitor-mailuser",
         "tsc": "tsc",
         "test": "mocha dist/test/*.js"
     },
