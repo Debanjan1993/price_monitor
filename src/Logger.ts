@@ -1,5 +1,8 @@
 import logger from 'pino';
+import { injectable } from 'inversify';
 
+
+@injectable()
 class JobLogger {
 
     constructor() { }
