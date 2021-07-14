@@ -1,0 +1,28 @@
+FROM node:12-alpine AS BUILD_IMAGE
+
+WORKDIR /app
+
+COPY . /app
+
+RUN npm install
+RUN npm run tsc
+
+FROM node:12-alpine AS DEPENDENCY_IMAGE
+
+WORKDIR /app
+
+COPY . /app
+
+RUN npm install --production=true
+
+FROM node:12-alpine
+
+WORKDIR /app
+
+COPY --from=BUILD_IMAGE /app/dist ./dist
+COPY --from=DEPENDENCY_IMAGE /app/node_modules ./node_modules
+COPY --from=DEPENDENCY_IMAGE /app/config ./config
+COPY --from=DEPENDENCY_IMAGE /app/public ./public
+COPY --from=DEPENDENCY_IMAGE /app/package.json .
+
+ENTRYPOINT npm run prod-emailuser
