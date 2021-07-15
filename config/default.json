@@ -2,9 +2,9 @@
     "mongoUri": "mongodb://127.0.0.1:27017/price_monitor",
     "sessionKey": "nvkLCHJwzfg117le",
     "sqs": {
-        "accessKeyId": "AKIAZVWKQASVLKZJ7QV4",
-        "secretAccessKey": "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",
-        "region": "us-east-2"
+        "accessKeyId": "AKIAZVWKQASVEI2Y4UYF",
+        "secretAccessKey": "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",
+        "region": "us-east-1"
     },
     "emailUsername": "debanjan.dey999@gmail.com",
     "emailPassword": "haripotter11",

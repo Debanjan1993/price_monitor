@@ -2,12 +2,12 @@
     "mongoUri": "mongodb+srv://debanjan:v81qo7B7MwGiUslM@cluster0.q0px3.mongodb.net/price_monitor?retryWrites=true&w=majority",
     "sessionKey": "nvkLCHJwzfg117le",
     "sqs": {
-        "accessKeyId": "AKIAZVWKQASVLKZJ7QV4",
-        "secretAccessKey": "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",
-        "region": "us-east-2"
+        "accessKeyId": "AKIAZVWKQASVEI2Y4UYF",
+        "secretAccessKey": "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",
+        "region": "us-east-1"
     },
     "emailUsername": "debanjan.dey999@gmail.com",
     "emailPassword": "haripotter11",
     "secretKey": "YRfQZAUCsVmPkMbK",
-    "baseUrl": "http://localhost:4000/"
+    "baseUrl": "http://price-monitor-alb-1781487084.us-east-1.elb.amazonaws.com/"
 }
