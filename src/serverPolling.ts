@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { connectToDB } from './connecToDB';
 import DIContainer from './ioc/DIContainer';
 import { CronJob } from 'cron';

@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { connectToDB, puppeteerLaunch } from './connecToDB';
 import DIContainer from './ioc/DIContainer';
 import QueueProcessor from './queueProcessor';

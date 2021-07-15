@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { connectToDB } from './connecToDB';
 import { enableTransporter } from './Mail';
 import DIContainer from './ioc/DIContainer';
